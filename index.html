@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Career Forge</title>
+
+<style>
+body{
+    font-family: "Segoe UI Emoji", "Segoe UI", Arial, sans-serif;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 20px;
+
+  background-image: url("Fundos/estadio.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+h1{
+    text-align: center;
+    color: white;
+    text-shadow: 0 0 15px black;
+}
+
+.bloco{
+    margin-bottom: 20px;
+
+    background: rgba(255,255,255,0.85);
+    padding: 18px;
+    border-radius: 15px;
+
+    backdrop-filter: blur(5px);
+}
+
+button{
+    padding: 10px 20px;
+    cursor: pointer;
+
+    background: #00b050;
+    color: white;
+    border: none;
+    border-radius: 10px;
+
+    font-weight: bold;
+}
+
+button:hover{
+    transform: scale(1.03);
+}
+
+#resultado{
+    margin-top: 30px;
+
+    background: rgba(255,255,255,0.85);
+
+    padding: 15px;
+    border-radius: 15px;
+
+    backdrop-filter: blur(5px);
+}
+
+.barraCheia,
+.barraVazia{
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    border-radius: 3px;
+}
+
+.barraCheia{
+    background: #00d26a;
+}
+
+.barraVazia{
+    background: #555;
+}
+
+.bandeira{
+    width:30px;
+    height:auto;
+    vertical-align:middle;
+    margin-right:8px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Career Forge</h1>
+
+<div class="bloco">
+    <label>Estilo de Save</label><br>
+    <select id="estilo">
+        <option>Ascensão gradual</option>
+        <option>Gigante adormecido</option>
+        <option>Potência regional</option>
+        <option>Vendedor de talentos</option>
+        <option>Moneyball</option>
+        <option>Jornada do treinador</option>
+    </select>
+</div>
+
+<div class="bloco">
+    <label>Filosofia de Mercado (até 2 opções)</label><br>
+
+    <input type="checkbox" value="Base" class="mercado"> Base<br>
+
+    <input type="checkbox" value="Jovens promissores" class="mercado"> Jovens promissores<br>
+
+    <input type="checkbox" value="Jogadores prontos (22-26)" class="mercado"> Jogadores prontos (22-26)<br>
+
+    <input type="checkbox" value="Misto" class="mercado"> Misto<br>
+
+    <input type="checkbox" value="Veteranos" class="mercado"> Veteranos
+</div>
+
+<div class="bloco">
+    <label>Nível de desafio: <span id="valorDesafio">5</span></label><br>
+    <input
+        type="range"
+        min="1"
+        max="10"
+        value="5"
+        id="desafio"
+    >
+</div>
+
+<div class="bloco">
+    <label>Velocidade de crescimento</label><br>
+    <select id="crescimento">
+        <option>Rápida</option>
+        <option>Moderada</option>
+        <option>Lenta</option>
+    </select>
+</div>
+
+<button onclick="gerarSave()">
+    Gerar Save
+</button>
+
+<div id="resultado"></div>
+
+<script>
+
+const clubes = [
+
+  {
+    nome: "Toulouse",
+    pais: "França",
+    historias: ["Ascensão gradual", "Vendedor de talentos"],
+    desafio: 4,
+    crescimento: "Rápida",
+    mercado: ["Base", "Jovens promissores"]
+  },
+
+  {
+    nome: "Hamburg",
+    pais: "Alemanha",
+    historias: ["Gigante adormecido"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Veteranos"]
+  },
+
+  {
+    nome: "AZ Alkmaar",
+    pais: "Holanda",
+    historias: ["Ascensão gradual", "Vendedor de talentos"],
+    desafio: 4,
+    crescimento: "Rápida",
+    mercado: ["Base", "Jovens promissores"]
+  },
+
+  {
+    nome: "Leeds United",
+    pais: "Inglaterra",
+    historias: ["Gigante adormecido", "Ascensão gradual"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jogadores prontos (22-26)"]
+  },
+
+  {
+    nome: "Middlesbrough",
+    pais: "Inglaterra",
+    historias: ["Ascensão gradual"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jovens promissores"]
+  },
+
+  {
+    nome: "Sunderland",
+    pais: "Inglaterra",
+    historias: ["Gigante adormecido"],
+    desafio: 4,
+    crescimento: "Rápida",
+    mercado: ["Misto", "Base"]
+  },
+
+  {
+    nome: "Norwich City",
+    pais: "Inglaterra",
+    historias: ["Ascensão gradual"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+  },
+
+  {
+    nome: "Sampdoria",
+    pais: "Itália",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Veteranos", "Jogadores prontos (22-26)"]
+  },
+
+  {
+    nome: "Fiorentina",
+    pais: "Itália",
+    historias: ["Ascensão gradual"],
+    desafio: 4,
+    crescimento: "Rápida",
+    mercado: ["Jogadores prontos (22-26)", "Misto"]
+  },
+
+  {
+    nome: "Parma",
+    pais: "Itália",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Veteranos", "Misto"]
+  },
+
+  {
+    nome: "Real Betis",
+    pais: "Espanha",
+    historias: ["Ascensão gradual"],
+    desafio: 3,
+    crescimento: "Rápida",
+    mercado: ["Jogadores prontos (22-26)", "Misto"]
+  },
+
+  {
+    nome: "Real Sociedad",
+    pais: "Espanha",
+    historias: ["Ascensão gradual", "Vendedor de talentos"],
+    desafio: 3,
+    crescimento: "Rápida",
+    mercado: ["Base", "Jovens promissores"]
+  },
+
+  {
+    nome: "Sporting CP",
+    pais: "Portugal",
+    historias: ["Vendedor de talentos", "Ascensão gradual"],
+    desafio: 4,
+    crescimento: "Rápida",
+    mercado: ["Base", "Jovens promissores"]
+  },
+
+  {
+    nome: "Braga",
+    pais: "Portugal",
+    historias: ["Ascensão gradual", "Vendedor de talentos"],
+    desafio: 5,
+    crescimento: "Rápida",
+    mercado: ["Jovens promissores", "Base"]
+  },
+
+  {
+    nome: "Lille",
+    pais: "França",
+    historias: ["Vendedor de talentos"],
+    desafio: 4,
+    crescimento: "Rápida",
+    mercado: ["Jovens promissores", "Base"]
+  },
+
+  {
+    nome: "Schalke 04",
+    pais: "Alemanha",
+    historias: ["Gigante adormecido"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Veteranos"]
+  },
+
+  {
+    nome: "CFR Cluj",
+    pais: "Romênia",
+    historias: ["Ascensão gradual"],
+    desafio: 7,
+    crescimento: "Lenta",
+    mercado: ["Veteranos", "Misto"]
+  },
+
+  {
+    nome: "FCSB",
+    pais: "Romênia",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jogadores prontos (22-26)"]
+  },
+
+  {
+    nome: "Köln",
+    pais: "Alemanha",
+    historias: ["Ascensão gradual"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Base"]
+},
+
+{
+    nome: "Werder Bremen",
+    pais: "Alemanha",
+    historias: ["Gigante adormecido"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Veteranos"]
+},
+
+{
+    nome: "Hannover 96",
+    pais: "Alemanha",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Veteranos", "Misto"]
+},
+
+{
+    nome: "Nürnberg",
+    pais: "Alemanha",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Veteranos", "Misto"]
+},
+
+{
+    nome: "Karlsruher SC",
+    pais: "Alemanha",
+    historias: ["Ascensão gradual"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Base", "Misto"]
+},
+
+{
+    nome: "Rapid Vienna",
+    pais: "Áustria",
+    historias: ["Potência regional"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Jogadores prontos (22-26)", "Misto"]
+},
+
+{
+    nome: "Austria Wien",
+    pais: "Áustria",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Veteranos", "Misto"]
+},
+
+{
+    nome: "Sturm Graz",
+    pais: "Áustria",
+    historias: ["Potência regional"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Jovens promissores", "Base"]
+},
+
+{
+    nome: "Shamrock Rovers",
+    pais: "Irlanda",
+    historias: ["Potência regional"],
+    desafio: 10,
+    crescimento: "Lenta",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Bohemian FC",
+    pais: "Irlanda",
+    historias: ["Ascensão gradual"],
+    desafio: 10,
+    crescimento: "Lenta",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Anderlecht",
+    pais: "Bélgica",
+    historias: ["Gigante adormecido"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Standard Liège",
+    pais: "Bélgica",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Veteranos", "Misto"]
+},
+
+{
+    nome: "Genk",
+    pais: "Bélgica",
+    historias: ["Vendedor de talentos"],
+    desafio: 5,
+    crescimento: "Rápida",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Gent",
+    pais: "Bélgica",
+    historias: ["Ascensão gradual"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jovens promissores"]
+},
+
+{
+    nome: "Brighton",
+    pais: "Inglaterra",
+    historias: ["Vendedor de talentos", "Moneyball"],
+    desafio: 4,
+    crescimento: "Rápida",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Brentford",
+    pais: "Inglaterra",
+    historias: ["Moneyball"],
+    desafio: 4,
+    crescimento: "Moderada",
+    mercado: ["Jovens promissores", "Misto"]
+},
+
+{
+    nome: "Bologna",
+    pais: "Itália",
+    historias: ["Ascensão gradual"],
+    desafio: 4,
+    crescimento: "Rápida",
+    mercado: ["Jovens promissores", "Jogadores prontos (22-26)"]
+},
+
+{
+    nome: "Atalanta",
+    pais: "Itália",
+    historias: ["Vendedor de talentos"],
+    desafio: 3,
+    crescimento: "Rápida",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Newcastle United",
+    pais: "Inglaterra",
+    historias: ["Potência regional", "Gigante adormecido"],
+    desafio: 3,
+    crescimento: "Rápida",
+    mercado: ["Jogadores prontos (22-26)", "Misto"]
+},
+
+{
+    nome: "Aston Villa",
+    pais: "Inglaterra",
+    historias: ["Ascensão gradual", "Potência regional"],
+    desafio: 3,
+    crescimento: "Rápida",
+    mercado: ["Jogadores prontos (22-26)", "Misto"]
+},
+
+{
+    nome: "FC København",
+    pais: "Dinamarca",
+    historias: ["Potência regional"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Jogadores prontos (22-26)", "Misto"]
+},
+
+{
+    nome: "Brøndby IF",
+    pais: "Dinamarca",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jogadores prontos (22-26)"]
+},
+
+{
+    nome: "FC Midtjylland",
+    pais: "Dinamarca",
+    historias: ["Vendedor de talentos"],
+    desafio: 5,
+    crescimento: "Rápida",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "AGF Aarhus",
+    pais: "Dinamarca",
+    historias: ["Ascensão gradual"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jogadores prontos (22-26)"]
+},
+
+{
+    nome: "Hearts",
+    pais: "Escócia",
+    historias: ["Potência regional"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Jogadores prontos (22-26)", "Veteranos"]
+},
+
+{
+    nome: "Hibernian",
+    pais: "Escócia",
+    historias: ["Ascensão gradual"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Base"]
+},
+
+{
+    nome: "Aberdeen",
+    pais: "Escócia",
+    historias: ["Potência regional"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Jogadores prontos (22-26)", "Misto"]
+},
+
+{
+    nome: "FC Utrecht",
+    pais: "Holanda",
+    historias: ["Ascensão gradual"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Jovens promissores", "Base"]
+},
+
+{
+    nome: "Heerenveen",
+    pais: "Holanda",
+    historias: ["Vendedor de talentos"],
+    desafio: 5,
+    crescimento: "Rápida",
+    mercado: ["Jovens promissores", "Base"]
+},
+
+{
+    nome: "Vitesse",
+    pais: "Holanda",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jovens promissores"]
+},
+
+{
+    nome: "Vitória Guimarães",
+    pais: "Portugal",
+    historias: ["Ascensão gradual"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Boavista",
+    pais: "Portugal",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Veteranos", "Misto"]
+},
+
+{
+    nome: "Legia Warszawa",
+    pais: "Polônia",
+    historias: ["Potência regional"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Jogadores prontos (22-26)", "Misto"]
+},
+
+{
+    nome: "Lech Poznań",
+    pais: "Polônia",
+    historias: ["Vendedor de talentos"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Jovens promissores", "Base"]
+},
+
+{
+    nome: "Malmö FF",
+    pais: "Suécia",
+    historias: ["Potência regional"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Jogadores prontos (22-26)", "Misto"]
+},
+
+{
+    nome: "Rosenborg",
+    pais: "Noruega",
+    historias: ["Gigante adormecido"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Veteranos", "Misto"]
+},
+
+{
+    nome: "AIK",
+    pais: "Suécia",
+    historias: ["Ascensão gradual"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Base"]
+},
+
+{
+    nome: "Molde",
+    pais: "Noruega",
+    historias: ["Potência regional"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Jovens promissores", "Base"]
+},
+
+{
+    nome: "Sparta Rotterdam",
+    pais: "Holanda",
+    historias: ["Ascensão gradual"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Dynamo Dresden",
+    pais: "Alemanha",
+    historias: ["Ascensão gradual", "Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Base", "Misto"]
+},
+
+{
+    nome: "1860 München",
+    pais: "Alemanha",
+    historias: ["Gigante adormecido"],
+    desafio: 8,
+    crescimento: "Lenta",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Rot-Weiss Essen",
+    pais: "Alemanha",
+    historias: ["Gigante adormecido"],
+    desafio: 8,
+    crescimento: "Lenta",
+    mercado: ["Misto", "Base"]
+},
+
+{
+    nome: "Arminia Bielefeld",
+    pais: "Alemanha",
+    historias: ["Gigante adormecido"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Veteranos"]
+},
+
+{
+    nome: "Alemannia Aachen",
+    pais: "Alemanha",
+    historias: ["Gigante adormecido"],
+    desafio: 9,
+    crescimento: "Lenta",
+    mercado: ["Base", "Misto"]
+},
+
+{
+    nome: "TSV 1860 Rosenheim",
+    pais: "Alemanha",
+    historias: ["Ascensão gradual"],
+    desafio: 9,
+    crescimento: "Lenta",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Duisburg",
+    pais: "Alemanha",
+    historias: ["Gigante adormecido"],
+    desafio: 8,
+    crescimento: "Lenta",
+    mercado: ["Veteranos", "Misto"]
+},
+
+{
+    nome: "Carl Zeiss Jena",
+    pais: "Alemanha",
+    historias: ["Ascensão gradual"],
+    desafio: 9,
+    crescimento: "Lenta",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Portsmouth",
+    pais: "Inglaterra",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Veteranos"]
+},
+
+{
+    nome: "Bolton Wanderers",
+    pais: "Inglaterra",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Veteranos", "Misto"]
+},
+
+{
+    nome: "Reading",
+    pais: "Inglaterra",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Base"]
+},
+
+{
+    nome: "Charlton Athletic",
+    pais: "Inglaterra",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Blackpool",
+    pais: "Inglaterra",
+    historias: ["Ascensão gradual"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jogadores prontos (22-26)"]
+},
+
+{
+    nome: "Wrexham",
+    pais: "País de Gales",
+    historias: ["Moneyball", "Ascensão gradual"],
+    desafio: 5,
+    crescimento: "Rápida",
+    mercado: ["Jogadores prontos (22-26)", "Misto"]
+},
+
+{
+    nome: "Notts County",
+    pais: "Inglaterra",
+    historias: ["Gigante adormecido"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Bradford City",
+    pais: "Inglaterra",
+    historias: ["Gigante adormecido"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Veteranos", "Misto"]
+},
+
+{
+    nome: "Stockport County",
+    pais: "Inglaterra",
+    historias: ["Ascensão gradual"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Base"]
+},
+
+{
+    nome: "MK Dons",
+    pais: "Inglaterra",
+    historias: ["Moneyball"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Jovens promissores", "Base"]
+},
+
+{
+    nome: "Exeter City",
+    pais: "Inglaterra",
+    historias: ["Vendedor de talentos"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "NAC Breda",
+    pais: "Holanda",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Go Ahead Eagles",
+    pais: "Holanda",
+    historias: ["Ascensão gradual"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Base"]
+},
+
+{
+    nome: "NEC Nijmegen",
+    pais: "Holanda",
+    historias: ["Ascensão gradual"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Jovens promissores", "Base"]
+},
+
+{
+    nome: "PEC Zwolle",
+    pais: "Holanda",
+    historias: ["Ascensão gradual"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jovens promissores"]
+},
+
+{
+    nome: "FC Groningen",
+    pais: "Holanda",
+    historias: ["Gigante adormecido"],
+    desafio: 5,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Silkeborg",
+    pais: "Dinamarca",
+    historias: ["Vendedor de talentos"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Randers",
+    pais: "Dinamarca",
+    historias: ["Ascensão gradual"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jogadores prontos (22-26)"]
+},
+
+{
+    nome: "Odense BK",
+    pais: "Dinamarca",
+    historias: ["Gigante adormecido"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Veteranos"]
+},
+
+{
+    nome: "Viborg",
+    pais: "Dinamarca",
+    historias: ["Ascensão gradual"],
+    desafio: 6,
+    crescimento: "Moderada",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Nordsjælland",
+    pais: "Dinamarca",
+    historias: ["Vendedor de talentos"],
+    desafio: 6,
+    crescimento: "Rápida",
+    mercado: ["Base", "Jovens promissores"]
+},
+
+{
+    nome: "Lyngby",
+    pais: "Dinamarca",
+    historias: ["Ascensão gradual"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Base", "Misto"]
+},
+
+{
+    nome: "Sønderjyske",
+    pais: "Dinamarca",
+    historias: ["Ascensão gradual"],
+    desafio: 7,
+    crescimento: "Moderada",
+    mercado: ["Misto", "Jogadores prontos (22-26)"]
+}
+
+];
+const desafio = document.getElementById("desafio");
+const valorDesafio = document.getElementById("valorDesafio");
+
+let top5 = [];
+let indiceAtual = 0;
+
+desafio.addEventListener("input", () => {
+    valorDesafio.textContent = desafio.value;
+});
+
+document.querySelectorAll(".mercado").forEach(box => {
+
+    box.addEventListener("change", () => {
+
+        const marcados =
+            document.querySelectorAll(".mercado:checked");
+
+        if (marcados.length > 2) {
+            box.checked = false;
+            alert("Escolha no máximo 2 mercados.");
+        }
+
+    });
+
+});
+function gerarSave(){
+
+    const estilo =
+        document.getElementById("estilo").value;
+
+    const mercadosSelecionados =
+    [...document.querySelectorAll(".mercado:checked")]
+    .map(item => item.value);
+
+    const crescimento =
+        document.getElementById("crescimento").value;
+
+    const dificuldade =
+        Number(document.getElementById("desafio").value);
+
+const clubesCompativeis = clubes.map(clube => {
+
+    let score = 0;
+
+    // Estilo
+    if (clube.historias.includes(estilo)) {
+        score += 4;
+    }
+
+    // Mercado
+    let matches = 0;
+
+    mercadosSelecionados.forEach(m => {
+        if (clube.mercado.includes(m)) {
+            matches++;
+            score += 2;
+        }
+    });
+
+    if (
+        matches === mercadosSelecionados.length &&
+        matches > 1
+    ) {
+        score += 2;
+    }
+
+    // Desafio
+    const diff = Math.abs(clube.desafio - dificuldade);
+    score += Math.max(0, 3 - diff);
+
+    // Crescimento
+    if (clube.crescimento === crescimento) {
+        score += 3;
+    }
+
+    return { ...clube, score };
+
+});
+
+const ranking = clubesCompativeis
+    .sort((a, b) => b.score - a.score);
+top5 = ranking.slice(0,5);
+indiceAtual = 0;
+
+document.getElementById("resultado").innerHTML = `
+    <h2>Seu Perfil</h2>
+
+    <p><strong>Estilo:</strong> ${estilo}</p>
+    <p><strong>Mercado:</strong> ${mercadosSelecionados.join(", ")}</p>
+    <p><strong>Desafio:</strong> ${dificuldade}/10</p>
+    <p><strong>Crescimento:</strong> ${crescimento}</p>
+
+    <hr>
+
+    <h2>Top 5 Recomendações</h2>
+
+    <div id="cardClube"></div>
+
+    <br>
+
+    <button onclick="anterior()">⬅</button>
+    <button onclick="proximo()">➡</button>
+`;
+
+mostrarClube();
+
+}
+
+const bandeiras = {
+    "Alemanha": "alemanha.svg",
+    "França": "França.svg",
+    "Inglaterra": "Inglaterra.svg",
+    "Espanha": "Espanha.png",
+    "Itália": "Itália.svg",
+    "Holanda": "Holanda.webp",
+    "Portugal": "Portugal.webp",
+    "Dinamarca": "Dinamarca.webp",
+    "Escócia": "Escócia.svg",
+    "Bélgica": "Bélgica.webp",
+    "Noruega": "Noruega.webp",
+    "Suécia": "Suécia.svg",
+    "Polônia": "Polônia.png",
+    "Irlanda": "Irlanda.svg",
+    "Romênia": "Romênia.png",
+    "Áustria": "Áustria.webp",
+    "País de Gales": "País de Gales.png"
+};
+
+function mostrarClube() {
+
+    const clube = top5[indiceAtual];
+
+    const bandeira = bandeiras[clube.pais];
+    
+    let dificuldadeBarra = "";
+
+    for (let i = 1; i <= 10; i++) {
+
+        if (i <= clube.desafio) {
+           dificuldadeBarra += "<span class='barraCheia'></span> ";
+        } else {
+        dificuldadeBarra += "<span class='barraVazia'></span> ";
+        }
+
+    }
+
+    document.getElementById("cardClube").innerHTML = `
+        <h3>#${indiceAtual + 1} - ${clube.nome}</h3>
+       <p>
+  <p>
+<img src="Bandeiras/${bandeira}" class="bandeira">
+    <strong>${clube.pais}</strong>
+</p>
+        <p><strong>Desafio</strong></p>
+        <p>${dificuldadeBarra}</p>
+
+        <p><strong>Crescimento:</strong> ${clube.crescimento}</p>
+    `;
+
+}
+function proximo() {
+    if (indiceAtual < top5.length - 1) {
+        indiceAtual++;
+        mostrarClube();
+    }
+}
+
+function anterior() {
+    if (indiceAtual > 0) {
+        indiceAtual--;
+        mostrarClube();
+    }
+}
+
+</script>
+
+</body>
+</html>
